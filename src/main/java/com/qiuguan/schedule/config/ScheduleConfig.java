@@ -9,8 +9,10 @@ import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -29,6 +31,8 @@ public class ScheduleConfig implements SchedulingConfigurer {
     @Value("${schedule.corn}")
     private String cron;
 
+    private String newCron;
+
     /**
      * 注意：修改使，如果url传入是一个错误的cron, 比如 null, 那么定时任务就终止了！！！！
      *
@@ -43,7 +47,14 @@ public class ScheduleConfig implements SchedulingConfigurer {
         }, new Trigger() {
             @Override
             public Date nextExecutionTime(TriggerContext triggerContext) {
-                CronTrigger cronTrigger = new CronTrigger(cron);
+
+                //如果表达式正确，就按照新的表达式执行任务，否则就按照原来的cron执行任务
+                if (CronExpression.isValidExpression(newCron)) {
+                    CronTrigger cronTrigger = new CronTrigger(newCron);
+                    return cronTrigger.nextExecutionTime(triggerContext);
+                }
+
+                CronTrigger cronTrigger  = new CronTrigger(cron);
                 return cronTrigger.nextExecutionTime(triggerContext);
             }
         });

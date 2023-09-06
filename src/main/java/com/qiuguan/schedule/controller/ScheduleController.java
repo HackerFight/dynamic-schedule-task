@@ -21,7 +21,7 @@ public class ScheduleController {
     public String dynamicSchedule(String cron){
         log.info("new cron: {}", cron);
 
-        this.scheduleConfig.setCron(cron);
+        this.scheduleConfig.setNewCron(cron);
 
         return "ok";
     }
