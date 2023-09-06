@@ -29,6 +29,10 @@ public class ScheduleConfig implements SchedulingConfigurer {
     @Value("${schedule.corn}")
     private String cron;
 
+    /**
+     * 注意：修改使，如果url传入是一个错误的cron, 比如 null, 那么定时任务就终止了！！！！
+     *
+     */
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.addTriggerTask(new Runnable() {
